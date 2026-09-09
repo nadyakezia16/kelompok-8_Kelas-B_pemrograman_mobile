@@ -1,5 +1,5 @@
 void main() {
-  //1.menyimpan daftar harga menggunakan Map (built-in type)
+  //menyimpan daftar harga menggunakan Map (built-in type)
   Map<String, int> daftarHarga = {
     'Buku': 10000,
     'Pensil': 3000,
@@ -7,10 +7,10 @@ void main() {
     'Tas': 150000
   };
 
-  //2.menyimpan daftar belanjaan menggunakan List (built-in type)
+  //menyimpan daftar belanjaan menggunakan List (built-in type)
   List<String> daftarBelanja = ['Buku', 'Pensil', 'Tas'];
 
-  //4.menampilkan total akhir belanjaan
+  //menampilkan total akhir belanjaan
   hitungDanTampilkanTotal(daftarBelanja, daftarHarga);
 }
 
@@ -26,7 +26,7 @@ void hitungDanTampilkanTotal(List<String> belanjaan, Map<String, int> hargaBaran
 
   double persenDiskon = 0.0;
 
-  //3.menentukan case diskon dengan if / else if / else & operator comparison
+  //menentukan case diskon dengan if / else if / else & operator comparison
   if (totalAwal >= 50000) {
     persenDiskon = 0.20; //diskon 20%
   } else if (totalAwal >= 30000) {

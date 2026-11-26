@@ -1,4 +1,3 @@
-
 class AppConfig {
   AppConfig._();
 
@@ -8,7 +7,7 @@ class AppConfig {
 
   static const String appName = 'Magangin';
 
-  // Supabase akan dikonfigurasi ketika backend siap.
-  static const String supabaseUrl = '';
-  static const String supabaseAnonKey = '';
+  // Supabase configuration
+  static const String supabaseUrl = 'https://ospwxhxtphavutyypgzz.supabase.co';
+  static const String supabaseAnonKey = 'sb_publishable_5SSOwrFh1lYw1mS2x8dt9A_AQeMeBds';
 }

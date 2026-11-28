@@ -42,6 +42,9 @@ class SupabasePreferenceRepository implements PreferenceRepository {
     // Pastikan preferensi disimpan untuk pengguna yang sedang login.
     data['student_id'] = user.id;
 
+    // Perbarui waktu terakhir preferensi disimpan.
+    data['updated_at'] = DateTime.now().toUtc().toIso8601String();
+
     final response = await _client
         .from('preferences')
         .upsert(

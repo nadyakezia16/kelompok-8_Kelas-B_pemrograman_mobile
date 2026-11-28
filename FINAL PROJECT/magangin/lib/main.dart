@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config.dart';
+import 'core/supabase/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/providers/repository_providers.dart';
 import 'core/router/app_router.dart';
@@ -11,11 +11,8 @@ import 'core/router/app_router.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi Supabase
-  await Supabase.initialize(
-    url: AppConfig.supabaseUrl,
-    anonKey: AppConfig.supabaseAnonKey,
-  );
+  // Inisialisasi Supabase hanya jika mode Supabase aktif.
+  await SupabaseConfig.initialize();
 
   runApp(const MaganginApp());
 }

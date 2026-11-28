@@ -33,7 +33,7 @@ int hitungTotal(List<String> belanjaan, Map<String, int> harga) {
       total += harga[item]!;
     }
   }
-  return total
+  return total;
 }
 
 // Function untuk menentukan diskon berdasarkan total belanja

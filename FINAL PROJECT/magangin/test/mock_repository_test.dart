@@ -7,6 +7,7 @@ import 'package:magangin/models/status_history.dart';
 import 'package:magangin/repositories/mock/mock_job_repository.dart';
 import 'package:magangin/repositories/mock/mock_company_repository.dart';
 import 'package:magangin/repositories/mock/mock_application_repository.dart';
+import 'package:magangin/repositories/mock/mock_auth_repository.dart';
 
 void main() {
   group('Integrasi Mock Repository', () {
@@ -17,8 +18,16 @@ void main() {
     late MockJobRepository jobRepository;
     late MockCompanyRepository companyRepository;
     late MockApplicationRepository applicationRepository;
+    late MockAuthRepository authRepository;
 
-    setUp(() {
+    setUp(() async {
+
+      authRepository = MockAuthRepository();
+
+      await authRepository.signIn(
+        email: 'company@magangin.com',
+        password: 'company123',
+      );
       // Menyiapkan satu penyimpanan bersama.
       sharedJobs = [];
       sharedApplications = [];
@@ -29,6 +38,7 @@ void main() {
 
       // Membuat repository perusahaan dengan penyimpanan yang sama.
       companyRepository = MockCompanyRepository(
+        authRepository: authRepository,
         sharedJobs: sharedJobs,
         sharedApplications: sharedApplications,
         sharedHistory: sharedHistory,

@@ -63,7 +63,12 @@ List<SingleChildWidget> get repositoryProviders {
     );
 
     return [
-      Provider<AuthRepository>(create: (_) => MockAuthRepository()),
+      Provider<MockAuthRepository>(
+        create: (_) => MockAuthRepository(),
+      ),
+      Provider<AuthRepository>(
+        create: (context) => context.read<MockAuthRepository>(),
+      ),
       Provider<ProfileRepository>(create: (_) => MockProfileRepository()),
       Provider<PreferenceRepository>.value(value: preferenceRepository),
       Provider<JobRepository>.value(value: mockJobRepository),
@@ -76,7 +81,8 @@ List<SingleChildWidget> get repositoryProviders {
         ),
       ),
       Provider<CompanyRepository>(
-        create: (_) => MockCompanyRepository(
+        create: (context) => MockCompanyRepository(
+          authRepository: context.read<AuthRepository>(),
           sharedJobs: sharedJobs,
           sharedApplications: sharedApplications,
           sharedHistory: sharedHistory,

@@ -30,10 +30,10 @@ class SupabaseDocumentRepository implements DocumentRepository {
     var request = _client
         .from('documents')
         .select()
-        .eq('owner_id', _userId);
+        .eq('profile_id', _userId);
 
     if (type != null && type.isNotEmpty) {
-      request = request.eq('type', type);
+      request = request.eq('document_type', type);
     }
 
     final response = await request.order(
@@ -42,7 +42,14 @@ class SupabaseDocumentRepository implements DocumentRepository {
     );
 
     return (response as List)
-        .map((item) => DocumentItem.fromJson(item))
+        .map((item) => DocumentItem.fromJson({
+              'id': item['id'],
+              'owner_id': item['profile_id'],
+              'type': item['document_type'],
+              'name': item['file_name'],
+              'file_path': item['storage_path'],
+              'created_at': item['created_at'],
+            }))
         .toList();
   }
 
@@ -57,8 +64,7 @@ class SupabaseDocumentRepository implements DocumentRepository {
     }
 
     if (type.isEmpty ||
-        !['cv', 'khs', 'cover_letter', 'portfolio', 'other']
-            .contains(type)) {
+        !['cv', 'khs', 'portfolio', 'other'].contains(type)) {
       throw Exception('Jenis dokumen tidak valid.');
     }
 
@@ -91,17 +97,23 @@ class SupabaseDocumentRepository implements DocumentRepository {
       final response = await _client
           .from('documents')
           .insert({
-        'owner_id': userId,
-        'type': type,
-        'name': name,
-        'file_path': filePath,
-      })
+            'profile_id': userId,
+            'document_type': type,
+            'file_name': name,
+            'storage_path': filePath,
+          })
           .select()
           .single();
 
-      return DocumentItem.fromJson(response);
+      return DocumentItem.fromJson({
+        'id': response['id'],
+        'owner_id': response['profile_id'],
+        'type': response['document_type'],
+        'name': response['file_name'],
+        'file_path': response['storage_path'],
+        'created_at': response['created_at'],
+      });
     } catch (_) {
-      // Hapus file Storage jika penyimpanan data dokumen gagal.
       await _client.storage.from(_bucket).remove([filePath]);
       rethrow;
     }
@@ -114,25 +126,32 @@ class SupabaseDocumentRepository implements DocumentRepository {
   }) async {
     final response = await _client
         .from('documents')
-        .update({'name': name})
+        .update({'file_name': name})
         .eq('id', id)
-        .eq('owner_id', _userId)
+        .eq('profile_id', _userId)
         .select()
         .single();
 
-    return DocumentItem.fromJson(response);
+    return DocumentItem.fromJson({
+      'id': response['id'],
+      'owner_id': response['profile_id'],
+      'type': response['document_type'],
+      'name': response['file_name'],
+      'file_path': response['storage_path'],
+      'created_at': response['created_at'],
+    });
   }
 
   @override
   Future<void> deleteDocument(String id) async {
     final document = await _client
         .from('documents')
-        .select('file_path')
+        .select('storage_path')
         .eq('id', id)
-        .eq('owner_id', _userId)
+        .eq('profile_id', _userId)
         .single();
 
-    final filePath = document['file_path'] as String;
+    final filePath = document['storage_path'] as String;
 
     await _client.storage.from(_bucket).remove([filePath]);
 
@@ -140,19 +159,19 @@ class SupabaseDocumentRepository implements DocumentRepository {
         .from('documents')
         .delete()
         .eq('id', id)
-        .eq('owner_id', _userId);
+        .eq('profile_id', _userId);
   }
 
   @override
   Future<String> getSignedUrl(String documentId) async {
     final document = await _client
         .from('documents')
-        .select('file_path')
+        .select('storage_path')
         .eq('id', documentId)
-        .eq('owner_id', _userId)
+        .eq('profile_id', _userId)
         .single();
 
-    final filePath = document['file_path'] as String;
+    final filePath = document['storage_path'] as String;
 
     return _client.storage
         .from(_bucket)

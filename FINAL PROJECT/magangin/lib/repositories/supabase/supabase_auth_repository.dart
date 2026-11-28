@@ -15,8 +15,10 @@ class SupabaseAuthRepository implements AuthRepository {
     required String fullName,
     required String role,
   }) async {
-    if (!['student', 'company', 'admin'].contains(role)) {
-      throw Exception('Role pengguna tidak valid.');
+    if (role != 'student') {
+      throw Exception(
+        'Registrasi hanya tersedia untuk mahasiswa.',
+      );
     }
 
     final response = await _client.auth.signUp(

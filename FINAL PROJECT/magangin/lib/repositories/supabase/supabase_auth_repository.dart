@@ -1,12 +1,38 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../core/supabase/avatar_url_helper.dart';
 import '../../core/supabase/supabase_config.dart';
 import '../../models/profile.dart';
 import '../interfaces/auth_repository.dart';
 
 class SupabaseAuthRepository implements AuthRepository {
   SupabaseClient get _client => SupabaseConfig.client;
+
+  Future<Profile> _profileFromResponse(
+    Map<String, dynamic> response,
+  ) async {
+    final profile = Profile.fromJson(response);
+
+    final avatarUrl = await AvatarUrlHelper.resolve(
+      profile.avatarUrl,
+    );
+
+    return Profile(
+      id: profile.id,
+      role: profile.role,
+      fullName: profile.fullName,
+      email: profile.email,
+      phone: profile.phone,
+      avatarUrl: avatarUrl,
+      university: profile.university,
+      major: profile.major,
+      semester: profile.semester,
+      bio: profile.bio,
+      verificationStatus: profile.verificationStatus,
+      verificationNote: profile.verificationNote,
+    );
+  }
 
   @override
   Future<Profile> signUp({
@@ -48,7 +74,7 @@ class SupabaseAuthRepository implements AuthRepository {
       );
     }
 
-    return Profile.fromJson(profileResponse);
+    return _profileFromResponse(profileResponse);
   }
 
   @override
@@ -77,7 +103,7 @@ class SupabaseAuthRepository implements AuthRepository {
       throw Exception('Profil pengguna tidak ditemukan.');
     }
 
-    return Profile.fromJson(profileResponse);
+    return _profileFromResponse(profileResponse);
   }
 
   @override
@@ -103,6 +129,6 @@ class SupabaseAuthRepository implements AuthRepository {
       return null;
     }
 
-    return Profile.fromJson(response);
+    return _profileFromResponse(response);
   }
 }

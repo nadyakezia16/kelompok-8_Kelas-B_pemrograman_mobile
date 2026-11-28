@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import '../../models/profile.dart';
@@ -15,25 +16,13 @@ class MockProfileRepository implements ProfileRepository {
       semester: 5,
       verificationStatus: 'verified',
     ),
-    const Profile(
-      id: 'company-001',
-      role: 'company',
-      fullName: 'Admin PT Teknologi Nusantara',
-      email: 'company@magangin.com',
-    ),
-    const Profile(
-      id: 'admin-001',
-      role: 'admin',
-      fullName: 'Administrator Magangin',
-      email: 'admin@magangin.com',
-    ),
   ];
 
   @override
   Future<Profile?> getProfile(String id) async {
     try {
       return _profiles.firstWhere(
-            (profile) => profile.id == id,
+        (profile) => profile.id == id,
       );
     } catch (_) {
       return null;
@@ -43,16 +32,33 @@ class MockProfileRepository implements ProfileRepository {
   @override
   Future<Profile> updateProfile(Profile profile) async {
     final index = _profiles.indexWhere(
-          (item) => item.id == profile.id,
+      (item) => item.id == profile.id,
     );
 
     if (index == -1) {
       throw Exception('Profil tidak ditemukan.');
     }
 
-    _profiles[index] = profile;
+    final currentProfile = _profiles[index];
 
-    return profile;
+    final updatedProfile = Profile(
+      id: currentProfile.id,
+      role: currentProfile.role,
+      fullName: profile.fullName,
+      email: currentProfile.email,
+      phone: profile.phone,
+      avatarUrl: profile.avatarUrl,
+      university: profile.university,
+      major: profile.major,
+      semester: profile.semester,
+      bio: profile.bio,
+      verificationStatus: currentProfile.verificationStatus,
+      verificationNote: currentProfile.verificationNote,
+    );
+
+    _profiles[index] = updatedProfile;
+
+    return updatedProfile;
   }
 
   @override
@@ -61,7 +67,6 @@ class MockProfileRepository implements ProfileRepository {
       throw Exception('File foto profil tidak ditemukan.');
     }
 
-    // Simulasi upload foto profil.
     return 'mock/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
   }
 }

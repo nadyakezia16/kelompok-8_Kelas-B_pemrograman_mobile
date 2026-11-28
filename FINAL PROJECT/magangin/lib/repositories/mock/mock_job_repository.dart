@@ -1,4 +1,3 @@
-
 import '../../models/company.dart';
 import '../../models/job.dart';
 import '../interfaces/job_repository.dart';
@@ -6,10 +5,19 @@ import '../interfaces/preference_repository.dart';
 
 class MockJobRepository implements JobRepository {
   MockJobRepository({
-    this._preferenceRepository,
-  });
+    PreferenceRepository? preferenceRepository,
+    List<Job>? sharedJobs,
+  }) : _preferenceRepository = preferenceRepository,
+       _sharedJobs = sharedJobs {
+    // Memasukkan data awal agar dapat langsung digunakan Company Repository.
+    if (_sharedJobs != null && _sharedJobs.isEmpty) {
+      _sharedJobs.addAll(_buildJobs());
+    }
+  }
 
   final PreferenceRepository? _preferenceRepository;
+
+  final List<Job>? _sharedJobs;
 
   final List<Company> _companies = [
     const Company(
@@ -74,49 +82,243 @@ class MockJobRepository implements JobRepository {
     ),
   ];
 
-  late final List<Job> _jobs = _buildJobs();
+  // Data lowongan bersama dengan Company Repository.
+  late final List<Job> _jobs = _initializeJobs();
+
+  List<Job> _initializeJobs() {
+    final jobs = _sharedJobs;
+
+    if (jobs == null) {
+      return _buildJobs();
+    }
+
+    // Isi data awal hanya jika penyimpanan masih kosong.
+    if (jobs.isEmpty) {
+      jobs.addAll(_buildJobs());
+    }
+
+    return jobs;
+  }
 
   List<Job> _buildJobs() {
     return [
-      _createJob('job-001', 'company-001', 'Flutter Developer Intern', 'Technology', 'Makassar', 'hybrid', 3, true),
-      _createJob('job-002', 'company-001', 'UI/UX Designer Intern', 'Design', 'Makassar', 'onsite', 3, true),
-      _createJob('job-003', 'company-002', 'Frontend Developer Intern', 'Technology', 'Jakarta', 'remote', 6, true),
-      _createJob('job-004', 'company-002', 'Social Media Intern', 'Marketing', 'Jakarta', 'hybrid', 3, false),
-      _createJob('job-005', 'company-003', 'Data Analyst Intern', 'Data Science', 'Bandung', 'onsite', 6, true),
-      _createJob('job-006', 'company-003', 'Backend Developer Intern', 'Technology', 'Bandung', 'remote', 3, true),
-      _createJob('job-007', 'company-004', 'Content Writer Intern', 'Content', 'Yogyakarta', 'remote', 3, false),
-      _createJob('job-008', 'company-004', 'Graphic Designer Intern', 'Design', 'Yogyakarta', 'hybrid', 3, true),
-      _createJob('job-009', 'company-005', 'Finance Intern', 'Finance', 'Jakarta', 'onsite', 6, true),
-      _createJob('job-010', 'company-005', 'Business Analyst Intern', 'Business', 'Jakarta', 'hybrid', 3, true),
-      _createJob('job-011', 'company-006', 'Mobile Developer Intern', 'Technology', 'Makassar', 'remote', 6, true),
-      _createJob('job-012', 'company-006', 'Education Content Intern', 'Education', 'Makassar', 'onsite', 3, false),
-      _createJob('job-013', 'company-007', 'Visual Designer Intern', 'Design', 'Surabaya', 'hybrid', 3, true),
-      _createJob('job-014', 'company-007', 'Video Editor Intern', 'Multimedia', 'Surabaya', 'onsite', 3, false),
-      _createJob('job-015', 'company-008', 'Network Engineer Intern', 'Technology', 'Jakarta', 'onsite', 6, true),
-      _createJob('job-016', 'company-008', 'IT Support Intern', 'IT Support', 'Jakarta', 'hybrid', 3, true),
-      _createJob('job-017', 'company-009', 'Environmental Research Intern', 'Research', 'Bogor', 'onsite', 6, false),
-      _createJob('job-018', 'company-009', 'Data Entry Intern', 'Administration', 'Bogor', 'remote', 3, true),
-      _createJob('job-019', 'company-010', 'Product Management Intern', 'Business', 'Makassar', 'hybrid', 3, true),
-      _createJob('job-020', 'company-010', 'Full Stack Developer Intern', 'Technology', 'Makassar', 'remote', 6, true),
+      _createJob(
+        'job-001',
+        'company-001',
+        'Flutter Developer Intern',
+        'Technology',
+        'Makassar',
+        'hybrid',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-002',
+        'company-001',
+        'UI/UX Designer Intern',
+        'Design',
+        'Makassar',
+        'onsite',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-003',
+        'company-002',
+        'Frontend Developer Intern',
+        'Technology',
+        'Jakarta',
+        'remote',
+        6,
+        true,
+      ),
+      _createJob(
+        'job-004',
+        'company-002',
+        'Social Media Intern',
+        'Marketing',
+        'Jakarta',
+        'hybrid',
+        3,
+        false,
+      ),
+      _createJob(
+        'job-005',
+        'company-003',
+        'Data Analyst Intern',
+        'Data Science',
+        'Bandung',
+        'onsite',
+        6,
+        true,
+      ),
+      _createJob(
+        'job-006',
+        'company-003',
+        'Backend Developer Intern',
+        'Technology',
+        'Bandung',
+        'remote',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-007',
+        'company-004',
+        'Content Writer Intern',
+        'Content',
+        'Yogyakarta',
+        'remote',
+        3,
+        false,
+      ),
+      _createJob(
+        'job-008',
+        'company-004',
+        'Graphic Designer Intern',
+        'Design',
+        'Yogyakarta',
+        'hybrid',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-009',
+        'company-005',
+        'Finance Intern',
+        'Finance',
+        'Jakarta',
+        'onsite',
+        6,
+        true,
+      ),
+      _createJob(
+        'job-010',
+        'company-005',
+        'Business Analyst Intern',
+        'Business',
+        'Jakarta',
+        'hybrid',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-011',
+        'company-006',
+        'Mobile Developer Intern',
+        'Technology',
+        'Makassar',
+        'remote',
+        6,
+        true,
+      ),
+      _createJob(
+        'job-012',
+        'company-006',
+        'Education Content Intern',
+        'Education',
+        'Makassar',
+        'onsite',
+        3,
+        false,
+      ),
+      _createJob(
+        'job-013',
+        'company-007',
+        'Visual Designer Intern',
+        'Design',
+        'Surabaya',
+        'hybrid',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-014',
+        'company-007',
+        'Video Editor Intern',
+        'Multimedia',
+        'Surabaya',
+        'onsite',
+        3,
+        false,
+      ),
+      _createJob(
+        'job-015',
+        'company-008',
+        'Network Engineer Intern',
+        'Technology',
+        'Jakarta',
+        'onsite',
+        6,
+        true,
+      ),
+      _createJob(
+        'job-016',
+        'company-008',
+        'IT Support Intern',
+        'IT Support',
+        'Jakarta',
+        'hybrid',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-017',
+        'company-009',
+        'Environmental Research Intern',
+        'Research',
+        'Bogor',
+        'onsite',
+        6,
+        false,
+      ),
+      _createJob(
+        'job-018',
+        'company-009',
+        'Data Entry Intern',
+        'Administration',
+        'Bogor',
+        'remote',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-019',
+        'company-010',
+        'Product Management Intern',
+        'Business',
+        'Makassar',
+        'hybrid',
+        3,
+        true,
+      ),
+      _createJob(
+        'job-020',
+        'company-010',
+        'Full Stack Developer Intern',
+        'Technology',
+        'Makassar',
+        'remote',
+        6,
+        true,
+      ),
     ];
   }
 
   Job _createJob(
-      String id,
-      String companyId,
-      String title,
-      String category,
-      String location,
-      String workType,
-      int durationMonths,
-      bool isPaid,
-      ) {
+    String id,
+    String companyId,
+    String title,
+    String category,
+    String location,
+    String workType,
+    int durationMonths,
+    bool isPaid,
+  ) {
     return Job(
       id: id,
       companyId: companyId,
-      company: _companies.firstWhere(
-            (company) => company.id == companyId,
-      ),
+      company: _companies.firstWhere((company) => company.id == companyId),
       title: title,
       category: category,
       location: location,
@@ -124,17 +326,14 @@ class MockJobRepository implements JobRepository {
       durationMonths: durationMonths,
       isPaid: isPaid,
       allowance: isPaid ? 1500000 : null,
-      description: 'Kesempatan magang untuk belajar dan mengembangkan keterampilan di bidang $category.',
+      description:
+          'Kesempatan magang untuk belajar dan mengembangkan keterampilan di bidang $category.',
       qualifications: [
         'Mahasiswa aktif',
         'Bersedia belajar dan bekerja dalam tim',
         'Memiliki ketertarikan pada bidang $category',
       ],
-      benefits: [
-        'Pengalaman kerja',
-        'Bimbingan mentor',
-        'Sertifikat magang',
-      ],
+      benefits: ['Pengalaman kerja', 'Bimbingan mentor', 'Sertifikat magang'],
       deadline: DateTime.now().add(const Duration(days: 30)),
       status: 'open',
       createdAt: DateTime.now(),
@@ -153,19 +352,21 @@ class MockJobRepository implements JobRepository {
     return _jobs.where((job) {
       final searchText = query?.toLowerCase().trim() ?? '';
 
-      final matchesQuery = searchText.isEmpty ||
+      final matchesQuery =
+          searchText.isEmpty ||
           job.title.toLowerCase().contains(searchText) ||
           job.category.toLowerCase().contains(searchText) ||
           (job.company?.name.toLowerCase().contains(searchText) ?? false);
 
-      final matchesCategory = category == null ||
+      final matchesCategory =
+          category == null ||
           job.category.toLowerCase().contains(category.toLowerCase());
 
-      final matchesLocation = location == null ||
+      final matchesLocation =
+          location == null ||
           job.location.toLowerCase().contains(location.toLowerCase());
 
-      final matchesWorkType =
-          workType == null || job.workType == workType;
+      final matchesWorkType = workType == null || job.workType == workType;
 
       final matchesDuration =
           durationMonths == null || job.durationMonths == durationMonths;
@@ -186,9 +387,7 @@ class MockJobRepository implements JobRepository {
   Future<List<Job>> getLatestJobs() async {
     final jobs = _jobs.where((job) => job.status == 'open').toList();
 
-    jobs.sort(
-          (a, b) => b.createdAt.compareTo(a.createdAt),
-    );
+    jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return jobs;
   }
@@ -202,24 +401,26 @@ class MockJobRepository implements JobRepository {
     }
 
     final recommended = _jobs.where((job) {
-      final matchesCategory = preference.categories.isEmpty ||
+      final matchesCategory =
+          preference.categories.isEmpty ||
           preference.categories.any(
-                (category) => job.category.toLowerCase().contains(
-              category.toLowerCase(),
-            ),
+            (category) =>
+                job.category.toLowerCase().contains(category.toLowerCase()),
           );
 
-      final matchesLocation = preference.locations.isEmpty ||
+      final matchesLocation =
+          preference.locations.isEmpty ||
           preference.locations.any(
-                (location) => job.location.toLowerCase().contains(
-              location.toLowerCase(),
-            ),
+            (location) =>
+                job.location.toLowerCase().contains(location.toLowerCase()),
           );
 
-      final matchesWorkType = preference.workTypes.isEmpty ||
+      final matchesWorkType =
+          preference.workTypes.isEmpty ||
           preference.workTypes.contains(job.workType);
 
-      final matchesDuration = preference.durationMonths == null ||
+      final matchesDuration =
+          preference.durationMonths == null ||
           job.durationMonths == preference.durationMonths;
 
       return job.status == 'open' &&
@@ -252,8 +453,6 @@ class MockJobRepository implements JobRepository {
 
   @override
   Future<List<Job>> getJobsByCompany(String companyId) async {
-    return _jobs
-        .where((job) => job.companyId == companyId)
-        .toList();
+    return _jobs.where((job) => job.companyId == companyId).toList();
   }
 }

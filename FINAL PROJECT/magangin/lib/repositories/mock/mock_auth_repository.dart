@@ -52,8 +52,10 @@ class MockAuthRepository implements AuthRepository {
       throw Exception('Email sudah terdaftar.');
     }
 
-    if (!['student', 'company', 'admin'].contains(role)) {
-      throw Exception('Role tidak valid.');
+    if (role != 'student') {
+      throw Exception(
+        'Registrasi hanya tersedia untuk mahasiswa.',
+      );
     }
 
     final newUser = Profile(

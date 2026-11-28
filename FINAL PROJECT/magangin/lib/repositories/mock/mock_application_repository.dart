@@ -1,12 +1,22 @@
-
 import '../../models/application.dart';
 import '../../models/status_history.dart';
 import '../interfaces/application_repository.dart';
 
 class MockApplicationRepository implements ApplicationRepository {
-  final List<Application> _applications = [];
+  MockApplicationRepository({
+    List<Application>? sharedApplications,
+    List<StatusHistory>? sharedHistory,
+  }) : _applications = sharedApplications ?? [],
+       _history = sharedHistory ?? [];
 
-  final List<StatusHistory> _history = [];
+  // Daftar lamaran yang digunakan bersama repository perusahaan.
+  final List<Application> _applications;
+
+  // Riwayat status yang digunakan bersama repository perusahaan.
+  final List<StatusHistory> _history;
+
+  // Akses daftar lamaran untuk repository lain.
+  List<Application> get applications => _applications;
 
   @override
   Future<Application> apply({
@@ -19,15 +29,13 @@ class MockApplicationRepository implements ApplicationRepository {
     const verificationStatus = 'verified';
 
     if (verificationStatus != 'verified') {
-      throw Exception(
-        'Akun mahasiswa harus terverifikasi sebelum melamar.',
-      );
+      throw Exception('Akun mahasiswa harus terverifikasi sebelum melamar.');
     }
 
     // Memeriksa apakah mahasiswa sudah pernah melamar.
     final alreadyApplied = _applications.any(
-          (application) =>
-      application.jobId == jobId &&
+      (application) =>
+          application.jobId == jobId &&
           application.studentId == 'student-001' &&
           application.status != 'cancelled',
     );
@@ -68,26 +76,22 @@ class MockApplicationRepository implements ApplicationRepository {
   Future<List<Application>> getMyApplications() async {
     return List.unmodifiable(
       _applications.where(
-            (application) => application.studentId == 'student-001',
+        (application) => application.studentId == 'student-001',
       ),
     );
   }
 
   @override
-  Future<List<StatusHistory>> getHistory(
-      String applicationId,
-      ) async {
+  Future<List<StatusHistory>> getHistory(String applicationId) async {
     return List.unmodifiable(
-      _history.where(
-            (item) => item.applicationId == applicationId,
-      ),
+      _history.where((item) => item.applicationId == applicationId),
     );
   }
 
   @override
   Future<void> cancelApplication(String id) async {
     final index = _applications.indexWhere(
-          (application) => application.id == id,
+      (application) => application.id == id,
     );
 
     if (index == -1) {
@@ -97,9 +101,7 @@ class MockApplicationRepository implements ApplicationRepository {
     final application = _applications[index];
 
     if (application.status != 'sent') {
-      throw Exception(
-        'Lamaran hanya dapat dibatalkan saat status masih sent.',
-      );
+      throw Exception('Lamaran hanya dapat dibatalkan saat status masih sent.');
     }
 
     final now = DateTime.now();

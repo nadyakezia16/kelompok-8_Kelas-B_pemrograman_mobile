@@ -23,7 +23,7 @@ class SupabaseJobRepository implements JobRepository {
     var request = _client
         .from('jobs')
         .select(_jobSelect)
-        .eq('status', 'open');
+        .eq('status', 'published');
 
     if (query != null && query.trim().isNotEmpty) {
       request = request.ilike('title', '%${query.trim()}%');
@@ -64,7 +64,7 @@ class SupabaseJobRepository implements JobRepository {
     final response = await _client
         .from('jobs')
         .select(_jobSelect)
-        .eq('status', 'open')
+        .eq('status', 'published')
         .order('created_at', ascending: false)
         .limit(20);
 
@@ -102,7 +102,7 @@ class SupabaseJobRepository implements JobRepository {
     final workTypes = List<String>.from(
       preference['work_types'] ?? [],
     );
-    final duration = preference['duration_months'];
+    final duration = (preference['duration_months'] as num?)?.toInt();
 
     int score(Job job) {
       var result = 0;

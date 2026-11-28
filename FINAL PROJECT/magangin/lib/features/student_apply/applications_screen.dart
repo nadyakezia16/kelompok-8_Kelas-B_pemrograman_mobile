@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/application.dart';
 import '../../repositories/interfaces/application_repository.dart';
+import 'application_detail_screen.dart';
 
 class ApplicationsScreen extends StatefulWidget {
   const ApplicationsScreen({super.key});
@@ -450,6 +451,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final jobTitle = job?.title ?? 'Lowongan Magang';
     final location = job?.location ?? 'Lokasi tidak tersedia';
     final status = application.status;
+
     final canCancel = status == 'sent' ||
         status == 'viewed' ||
         status == 'processing';
@@ -660,90 +662,22 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     }
   }
 
+  // Navigasi ke halaman detail lamaran.
   void _showApplicationDetail(Application application) {
     final job = application.job;
 
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Detail Lamaran'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _detailRow(
-                  'Posisi',
-                  job?.title ?? 'Lowongan Magang',
-                ),
-                _detailRow(
-                  'Perusahaan',
-                  job?.company?.name ?? 'Tidak tersedia',
-                ),
-                _detailRow(
-                  'Lokasi',
-                  job?.location ?? 'Tidak tersedia',
-                ),
-                _detailRow(
-                  'Status',
-                  _statusLabel(application.status),
-                ),
-                _detailRow(
-                  'Tanggal Lamaran',
-                  _formatDate(application.createdAt),
-                ),
-                if (application.message != null &&
-                    application.message!.isNotEmpty)
-                  _detailRow(
-                    'Pesan',
-                    application.message!,
-                  ),
-                if (application.companyNote != null &&
-                    application.companyNote!.isNotEmpty)
-                  _detailRow(
-                    'Catatan Perusahaan',
-                    application.companyNote!,
-                  ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-              },
-              child: const Text('Tutup'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+    if (job == null) {
+      _showMessage('Informasi lowongan tidak tersedia.');
+      return;
+    }
 
-  Widget _detailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 11,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            value,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ApplicationDetailScreen(
+          application: application,
+          job: job,
+        ),
       ),
     );
   }

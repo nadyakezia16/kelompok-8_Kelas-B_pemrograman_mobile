@@ -1,17 +1,20 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../screens/splash_screen.dart';
 import '../../repositories/interfaces/auth_repository.dart';
 import 'placeholder_screen.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/splash',
 
   redirect: (context, state) async {
-    final authRepository = context.read<AuthRepository>();
+    if (state.matchedLocation == '/splash') {
+      return null;
+    }
 
+    final authRepository = context.read<AuthRepository>();
     final profile = await authRepository.currentProfile();
     final currentPath = state.matchedLocation;
 
@@ -60,11 +63,8 @@ final GoRouter appRouter = GoRouter(
     }
 
     if (profile.role == 'company') {
-      if (currentPath == '/admin') {
-        return '/company-panel';
-      }
-
-      if (_isStudentRoute(currentPath)) {
+      if (currentPath == '/admin' ||
+          _isStudentRoute(currentPath)) {
         return '/company-panel';
       }
     }
@@ -88,31 +88,31 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Login'),
+          const PlaceholderScreen(title: 'Login'),
     ),
 
     GoRoute(
       path: '/register',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Register'),
+          const PlaceholderScreen(title: 'Register'),
     ),
 
     GoRoute(
       path: '/home',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Beranda Mahasiswa'),
+          const PlaceholderScreen(title: 'Beranda Mahasiswa'),
     ),
 
     GoRoute(
       path: '/explore',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Jelajahi Lowongan'),
+          const PlaceholderScreen(title: 'Jelajahi Lowongan'),
     ),
 
     GoRoute(
       path: '/search',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Pencarian'),
+          const PlaceholderScreen(title: 'Pencarian'),
     ),
 
     GoRoute(
@@ -132,19 +132,19 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/saved',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Lowongan Tersimpan'),
+          const PlaceholderScreen(title: 'Lowongan Tersimpan'),
     ),
 
     GoRoute(
       path: '/preferences',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Preferensi'),
+          const PlaceholderScreen(title: 'Preferensi'),
     ),
 
     GoRoute(
       path: '/documents',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Dokumen'),
+          const PlaceholderScreen(title: 'Dokumen'),
     ),
 
     GoRoute(
@@ -157,37 +157,42 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/applications',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Lamaran Saya'),
+          const PlaceholderScreen(title: 'Lamaran Saya'),
     ),
 
     GoRoute(
       path: '/profile',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Profil'),
+          const PlaceholderScreen(title: 'Profil'),
     ),
 
     GoRoute(
       path: '/edit-profile',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Edit Profil'),
+          const PlaceholderScreen(title: 'Edit Profil'),
     ),
 
     GoRoute(
       path: '/notifications',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Notifikasi'),
+          const PlaceholderScreen(title: 'Notifikasi'),
     ),
 
     GoRoute(
       path: '/company-panel',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Panel Perusahaan'),
+          const PlaceholderScreen(title: 'Panel Perusahaan'),
     ),
 
     GoRoute(
       path: '/admin',
       builder: (context, state) =>
-      const PlaceholderScreen(title: 'Panel Admin'),
+          const PlaceholderScreen(title: 'Panel Admin'),
+    ),
+
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
     ),
   ],
 
